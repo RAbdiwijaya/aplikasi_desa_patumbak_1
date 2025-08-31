@@ -8,16 +8,24 @@ use Illuminate\Http\Request;
 class KontakController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (admin).
      */
-    public function index1()
+    public function index()
     {
-        $kontaks = Kontak::paginate(10); // Paginate the contacts for better performance
+        $search = request('search');
+        $kontaks = Kontak::when($search, function ($query, $search) {
+            return $query->where('nama', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('no_hp', 'like', "%{$search}%")
+                        ->orWhere('jenis_subyek', 'like', "%{$search}%")
+                        ->orWhere('pesan', 'like', "%{$search}%");
+        })->paginate(10);
+        
         return view('components.kontak.index', compact('kontaks'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource (public).
      */
     public function create()
     {
@@ -37,7 +45,6 @@ class KontakController extends Controller
             'pesan' => 'required|string',
         ]);
 
-
         Kontak::create([
             'nama' => $validated['nama'],
             'email' => $validated['email'],
@@ -54,22 +61,41 @@ class KontakController extends Controller
      */
     public function show(Kontak $kontak)
     {
-        $kontak = Kontak::findOrFail($kontak->id);
         return view('components.kontak.show', compact('kontak'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Kontak $kontak)
+    {
+        return view('components.kontak.edit', compact('kontak'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Kontak $kontak)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:20',
+            'email' => 'required|string|max:100',
+            'no_hp' => 'required|string|max:20',
+            'jenis_subyek' => 'required|string',
+            'pesan' => 'required|string',
+        ]);
+
+        $kontak->update($validated);
+
+        return redirect()->route('kontak.index')->with('success', 'Pengaduan berhasil diupdate!');
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    
-        public function destroy(Kontak $kontak)
-   {
-    $kontak->delete();
-    return redirect()->route('kontak.index')->with('success', 'Pengaduan berhasil dihapus!');
-   }
-   public function edit(Kontak $kontak)
-{
-    return view('components.kontak.edit', compact('kontak'));
-}
+    public function destroy(Kontak $kontak)
+    {
+        $kontak->delete();
+        return redirect()->route('kontak.index')->with('success', 'Pengaduan berhasil dihapus!');
+    }
 }

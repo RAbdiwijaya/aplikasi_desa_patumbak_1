@@ -63,7 +63,7 @@ Route::get('berita-kegiatan/pengumuman', [PengumumanController::class, 'pengumum
 // Route::get('galeri.user', [GaleriController::class, 'indexUser'])->name('galeri.user');
 
 // Kontak (Publik)
-Route::get('kontak/create', [KontakController::class, 'create'])->name('kontak.create');
+Route::get('kontak.user', [KontakController::class, 'create'])->name('kontak.create');
 Route::post('kontak', [KontakController::class, 'store'])->name('kontak.store');
 
 // Surat Menyurat (Publik)
@@ -85,11 +85,12 @@ Route::middleware(['auth', 'verified'])->prefix('surat-menyurat')->group(functio
 });
 
 // Kontak (Admin)
-Route::middleware(['auth', 'verified'])->prefix('kontak')->group(function () {
-    Route::get('/', [KontakController::class, 'index'])->name('kontak.index');
-    Route::get('/{kontak}/show', [KontakController::class, 'edit'])->name('kontak.edit');
-    Route::delete('/{kontak}/destroy', [KontakController::class, 'destroy'])->name('kontak.destroy');
-    Route::get('kontak/show', [KontakController::class, 'show'])->name('kontak.show');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/kontak', [KontakController::class, 'index'])->name('kontak.index');
+    Route::get('/kontak/{kontak}', [KontakController::class, 'show'])->name('kontak.show');
+    Route::get('/kontak/{kontak}/edit', [KontakController::class, 'edit'])->name('kontak.edit');
+    Route::put('/kontak/{kontak}', [KontakController::class, 'update'])->name('kontak.update');
+    Route::delete('/kontak/{kontak}', [KontakController::class, 'destroy'])->name('kontak.destroy');
 });
 
 // Dashboard Admin & Profile

@@ -1,8 +1,8 @@
-<x-app-layout title="Admin - Perangkat Desa">
+<x-app-layout title="Admin - Lembaga Pendidikan">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
             <div>
-                <h1 class="text-2xl font-serif font-light text-gray-800">Kelola Lembaga Pendidikan di Desa Suka Maju</h1>
+                <h1 class="text-2xl font-serif font-light text-gray-800">Kelola Lembaga Pendidikan di Desa Patumbak 1</h1>
                 <p class="text-sm text-gray-500 mt-1">Manajemen Data Lembaga Pendidikan</p>
             </div>
             <a href="{{ route('pendidikan.create') }}" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
@@ -29,6 +29,39 @@
             </div>
         </div>
         @endif
+
+        <!-- Filter dan Pencarian -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <form method="GET" action="{{ route('pendidikan.index') }}">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700">Pencarian</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" 
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm" 
+                               placeholder="Cari nama institusi, alamat, atau akreditasi">
+                    </div>
+                    
+                    <div>
+                        <label for="tingkat" class="block text-sm font-medium text-gray-700">Tingkat Pendidikan</label>
+                        <select name="tingkat" id="tingkat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
+                            <option value="">Semua Tingkat</option>
+                            <option value="TK/PAUD" {{ request('tingkat') == 'TK/PAUD' ? 'selected' : '' }}>TK/PAUD</option>
+                            <option value="Sekolah Dasar" {{ request('tingkat') == 'Sekolah Dasar' ? 'selected' : '' }}>Sekolah Dasar</option>
+                            <option value="SMP" {{ request('tingkat') == 'SMP' ? 'selected' : '' }}>SMP</option>
+                            <option value="SMA" {{ request('tingkat') == 'SMA' ? 'selected' : '' }}>SMA</option>
+                            <option value="SMK" {{ request('tingkat') == 'SMK' ? 'selected' : '' }}>SMK</option>
+                            <option value="Perguruan Tinggi" {{ request('tingkat') == 'Perguruan Tinggi' ? 'selected' : '' }}>Perguruan Tinggi</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            Terapkan Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
         <div class="bg-white shadow overflow-hidden sm:rounded-lg">
             <div class="flex flex-col">
@@ -62,10 +95,10 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($pendidikan as $i => $p)
+                                    @forelse($pendidikan as $i => $p)
                                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{ $i+1 }}
+                                            {{ ($pendidikan->currentPage() - 1) * $pendidikan->perPage() + $i + 1 }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $p->nama_institusi }}
@@ -74,17 +107,26 @@
                                             <div class="text-sm font-medium text-gray-900">{{ $p->tahun_berdiri }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">{{ $p->tingkat_pendidikan }}</div>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                @if($p->tingkat_pendidikan == 'TK/PAUD') bg-pink-100 text-pink-800
+                                                @elseif($p->tingkat_pendidikan == 'Sekolah Dasar') bg-blue-100 text-blue-800
+                                                @elseif($p->tingkat_pendidikan == 'SMP') bg-green-100 text-green-800
+                                                @elseif($p->tingkat_pendidikan == 'SMA') bg-purple-100 text-purple-800
+                                                @elseif($p->tingkat_pendidikan == 'SMK') bg-yellow-100 text-yellow-800
+                                                @else bg-gray-100 text-gray-800
+                                                @endif">
+                                                {{ $p->tingkat_pendidikan }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900 max-w-xs truncate">{{ $p->alamat }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">{{ $p->alamat }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">{{ $p->akreditasi }}</div>
+                                            <div class="text-sm font-medium text-gray-900">{{ $p->akreditasi ?? '-' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex justify-end space-x-2">
-                                                <a href="{{ route('pendidikan.edit', $p->id) }}" class="text-gray-600 hover:text-gray-900" title="Edit">
+                                                <a href="{{ route('pendidikan.edit', $p->id) }}" class="text-indigo-600 hover:text-indigo-900" title="Edit">
                                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
@@ -101,7 +143,13 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                            Tidak ada data pendidikan ditemukan.
+                                        </td>
+                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
