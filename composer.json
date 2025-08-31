@@ -38,6 +38,13 @@
         }
     },
     "scripts": {
+        "post-install-cmd": [
+            "php artisan optimize:clear",
+            "php artisan optimize"
+        ],
+        "post-deploy-cmd": [
+            "php artisan migrate --force"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
