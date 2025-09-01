@@ -16,6 +16,12 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @production
+        <style>
+            {{-- Load CSS secara inline untuk menghindari flash unstyled content --}}
+            {{ file_get_contents(public_path('build/assets/app.css')) }}
+        </style>
+    @endproduction
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
