@@ -7,21 +7,6 @@ use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function boot()
-    {
-        // Fallback untuk assets di production
-        Vite::useStyleTagAttributes(function (string $src, string $url, array $chunk, array $manifest) {
-            if ($this->app->isProduction()) {
-                return [
-                    'rel' => 'stylesheet',
-                    'href' => $url,
-                    'nonce' => request()->header('X-Nonce'),
-                ];
-            }
-            
-            return [];
-        });
-    }
     /**
      * Register any application services.
      */
@@ -35,6 +20,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Hanya ada SATU method boot()
+        // Pastikan tidak ada duplikasi method boot() lainnya
+        
+        // Contoh konfigurasi Vite untuk production (jika diperlukan)
+        Vite::useStyleTagAttributes(function (string $src, string $url, array $chunk, array $manifest) {
+            if ($this->app->isProduction()) {
+                return [
+                    'rel' => 'stylesheet',
+                    'href' => $url,
+                ];
+            }
+            return [];
+        });
     }
 }
