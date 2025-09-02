@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite",
