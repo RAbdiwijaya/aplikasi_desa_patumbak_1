@@ -11,7 +11,7 @@ class ForceToHTTPS
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (str_ends_with($request->getHost(), 'aplikasidesapatumbak1-production.up.railway.app')) {
+        if (str_ends_with($request->getHost(), 'railway.app')) {
             URL::forceScheme('https');
         }
         return $next($request);
