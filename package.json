@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build --emptyOutDir",
     "preview": "vite preview",
-    "build:production": "npm run build && php artisan vite:generate-manifest"
+    "build:production": "npm run build && php artisan config:clear"
   },
   "dependencies": {
     "alpinejs": "^3.14.9",
