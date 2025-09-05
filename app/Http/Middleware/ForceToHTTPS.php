@@ -9,15 +9,10 @@ use Illuminate\Support\Facades\URL;
 
 class ForceToHTTPS
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if (str_ends_with($request->getHost(), 'aplikasidesapatumbak1-production.up.railway.app')) {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+            URL::forceScheme('https');
         }
         return $next($request);
     }
